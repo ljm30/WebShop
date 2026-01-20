@@ -11,6 +11,15 @@ cd "$SCRIPT_DIR"
 echo "=== WebShop Server ==="
 
 # ============================================================
+# Use Java 11 from NAS (required for pyserini)
+# ============================================================
+JAVA11_PATH="$(dirname "$SCRIPT_DIR")/java11"
+if [ -d "$JAVA11_PATH" ]; then
+    export JAVA_HOME="$JAVA11_PATH"
+    export PATH="$JAVA_HOME/bin:$PATH"
+fi
+
+# ============================================================
 # Parse arguments
 # ============================================================
 PORT=3000

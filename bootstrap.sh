@@ -13,6 +13,20 @@ echo "This script downloads ~3GB of data and builds search indexes."
 echo ""
 
 # ============================================================
+# Use Java 11 from NAS (required for pyserini)
+# ============================================================
+JAVA11_PATH="$(dirname "$SCRIPT_DIR")/java11"
+if [ -d "$JAVA11_PATH" ]; then
+    export JAVA_HOME="$JAVA11_PATH"
+    export PATH="$JAVA_HOME/bin:$PATH"
+    echo "Using Java 11 from: $JAVA_HOME"
+    echo "Java version: $(java -version 2>&1 | head -1)"
+else
+    echo "WARNING: Java 11 not found at $JAVA11_PATH"
+    echo "pyserini requires Java 11. Please install it first."
+fi
+
+# ============================================================
 # Install Python to project directory (for offline workers)
 # ============================================================
 export UV_PYTHON_INSTALL_DIR="$SCRIPT_DIR/.uv/python"
@@ -93,12 +107,12 @@ fi
 cd "$SCRIPT_DIR"
 
 # ============================================================
-# Download spaCy model
+# Download spaCy model (use uv since venv has no pip)
 # ============================================================
 echo ""
 echo "=== Downloading spaCy Model ==="
 if ! python -c "import spacy; spacy.load('en_core_web_lg')" 2>/dev/null; then
-    python -m spacy download en_core_web_lg
+    uv pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.7.1/en_core_web_lg-3.7.1-py3-none-any.whl
 else
     echo "  en_core_web_lg already installed, skipping"
 fi

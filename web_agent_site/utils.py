@@ -5,16 +5,16 @@ import random
 from os.path import dirname, abspath, join
 
 BASE_DIR = dirname(abspath(__file__))
-DEBUG_PROD_SIZE = None  # set to `None` to disable
+DEBUG_PROD_SIZE = None  # Use all products
 
-DEFAULT_ATTR_PATH = join(BASE_DIR, '../data/items_ins_v2_1000.json')
-DEFAULT_FILE_PATH = join(BASE_DIR, '../data/items_shuffle_1000.json')
+# Full dataset paths
+DEFAULT_ATTR_PATH = join(BASE_DIR, '../data/items_ins_v2.json')
+DEFAULT_FILE_PATH = join(BASE_DIR, '../data/items_shuffle.json')
 DEFAULT_REVIEW_PATH = join(BASE_DIR, '../data/reviews.json')
 
 FEAT_CONV = join(BASE_DIR, '../data/feat_conv.pt')
 FEAT_IDS = join(BASE_DIR, '../data/feat_ids.pt')
 
-HUMAN_ATTR_PATH = join(BASE_DIR, '../data/items_human_ins.json')
 HUMAN_ATTR_PATH = join(BASE_DIR, '../data/items_human_ins.json')
 
 def random_idx(cum_weights):

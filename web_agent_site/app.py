@@ -1,4 +1,4 @@
-import argparse, json, logging, random
+import argparse, json, logging, os, random
 from pathlib import Path
 from ast import literal_eval
 
@@ -266,10 +266,34 @@ def done(session_id, asin, options):
     )
 
 
+def preload_data():
+    """Preload products and search engine at startup to avoid first-request delay."""
+    global all_products, product_item_dict, product_prices, attribute_to_asins
+    global search_engine, goals, weights
+
+    print("Preloading products and search engine (this may take a few minutes)...")
+
+    all_products, product_item_dict, product_prices, attribute_to_asins = \
+        load_products(
+            filepath=DEFAULT_FILE_PATH,
+            num_products=DEBUG_PROD_SIZE
+        )
+    search_engine = init_search_engine(num_products=DEBUG_PROD_SIZE)
+    goals = get_goals(all_products, product_prices)
+    random.seed(233)
+    random.shuffle(goals)
+    weights = [goal['weight'] for goal in goals]
+
+    print(f"Preloaded {len(all_products)} products and {len(goals)} goals.")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="WebShop flask app backend configuration")
     parser.add_argument("--log", action='store_true', help="Log actions on WebShop in trajectory file")
     parser.add_argument("--attrs", action='store_true', help="Show attributes tab in item page")
+    parser.add_argument("--host", type=str, default=None, help="Host to bind to (default: 0.0.0.0)")
+    parser.add_argument("--port", type=int, default=None, help="Port to bind to (default: 3000)")
+    parser.add_argument("--no-preload", action='store_true', help="Skip preloading data at startup")
 
     args = parser.parse_args()
     if args.log:
@@ -277,4 +301,12 @@ if __name__ == "__main__":
         user_log_dir.mkdir(parents=True, exist_ok=True)
     SHOW_ATTRS_TAB = args.attrs
 
-    app.run(host='0.0.0.0', port=3000)
+    # Preload data at startup (unless --no-preload is set)
+    if not args.no_preload:
+        preload_data()
+
+    # Support environment variables for host/port (for start_server.sh)
+    host = args.host or os.environ.get('WEBSHOP_HOST', '0.0.0.0')
+    port = args.port or int(os.environ.get('WEBSHOP_PORT', '3000'))
+
+    app.run(host=host, port=port)

@@ -1,0 +1,40 @@
+[project]
+name = "webshop"
+version = "1.0.0"
+description = "WebShop: Towards Scalable Real-World Web Interaction with Grounded Language Agents"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+
+dependencies = [
+    "beautifulsoup4>=4.11.1",
+    "cleantext>=1.1.4",
+    "Flask>=2.1.2",
+    "Werkzeug<3.0",  # Flask 2.x compatibility
+    "gdown>=4.5.0",
+    "gym>=0.24.0",
+    "numpy>=1.22.4,<2.0",  # pyserini compatibility
+    "pandas>=1.4.2",
+    "pyserini>=0.17.0",
+    "pytest",
+    "PyYAML>=6.0",
+    "rank_bm25>=0.2.2",
+    "requests>=2.27.1",
+    "rich>=12.4.4",
+    "scikit-learn>=1.1.1",
+    "spacy>=3.3.0",
+    "thefuzz>=0.19.0",
+    "torch>=1.11.0",
+    "tqdm>=4.64.0",
+    "transformers>=4.19.2",
+    "faiss-cpu>=1.7.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+dev-dependencies = [
+    "requests-mock",
+]

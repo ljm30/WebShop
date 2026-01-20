@@ -193,16 +193,8 @@ def generate_product_prices(all_products):
 
 
 def init_search_engine(num_products=None):
-    if num_products == 100:
-        indexes = 'indexes_100'
-    elif num_products == 1000:
-        indexes = 'indexes_1k'
-    elif num_products == 100000:
-        indexes = 'indexes_100k'
-    elif num_products is None:
-        indexes = 'indexes'
-    else:
-        raise NotImplementedError(f'num_products being {num_products} is not supported yet.')
+    # Always use full index
+    indexes = 'indexes'
     search_engine = LuceneSearcher(os.path.join(BASE_DIR, f'../search_engine/{indexes}'))
     return search_engine
 

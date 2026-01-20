@@ -5,8 +5,6 @@
 # Run this ONCE on a machine with internet access (master).
 # After completion, use start_server.sh on worker machines.
 
-set -e
-
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
@@ -29,6 +27,9 @@ if ! command -v uv &> /dev/null; then
     export PATH="$HOME/.local/bin:$PATH"
 fi
 
+echo "uv location: $(which uv)"
+echo "uv version: $(uv --version)"
+
 # Check if .venv exists and Python works
 if [ -d ".venv" ] && [ -x ".venv/bin/python" ]; then
     if .venv/bin/python --version &> /dev/null; then
@@ -44,13 +45,21 @@ fi
 if [ ! -d ".venv" ]; then
     echo "Installing Python 3.10 to project directory..."
     echo "Install location: $UV_PYTHON_INSTALL_DIR"
-    uv python install 3.10
+    if ! uv python install 3.10; then
+        echo "ERROR: Failed to install Python 3.10"
+        return 1 2>/dev/null || exit 1
+    fi
 
     echo "Creating virtual environment and syncing dependencies..."
-    uv sync --python 3.10
+    if ! uv sync --python 3.10; then
+        echo "ERROR: Failed to sync dependencies"
+        return 1 2>/dev/null || exit 1
+    fi
 fi
 
 source .venv/bin/activate
+echo "Python: $(python --version)"
+echo "Location: $(which python)"
 
 # ============================================================
 # Download data files (full dataset: 1.18M products)

@@ -26,6 +26,11 @@ else
     echo "pyserini requires Java 11. Please install it first."
 fi
 
+# Disable vector module that requires Java 16+ (pyserini/pyjnius compatibility)
+export JDK_JAVA_OPTIONS=""
+export _JAVA_OPTIONS=""
+export JAVA_TOOL_OPTIONS=""
+
 # ============================================================
 # Install Python to project directory (for offline workers)
 # ============================================================

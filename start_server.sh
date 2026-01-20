@@ -19,6 +19,11 @@ if [ -d "$JAVA11_PATH" ]; then
     export PATH="$JAVA_HOME/bin:$PATH"
 fi
 
+# Disable vector module that requires Java 16+
+export JDK_JAVA_OPTIONS=""
+export _JAVA_OPTIONS=""
+export JAVA_TOOL_OPTIONS=""
+
 # ============================================================
 # Parse arguments
 # ============================================================

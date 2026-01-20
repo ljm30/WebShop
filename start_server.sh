@@ -1,6 +1,6 @@
 #!/bin/bash
 # WebShop Server Startup Script
-# Usage: source start_server.sh [--port PORT] [--host HOST]
+# Usage: source start_server.sh [--port PORT] [--bg]
 #
 # Run this on worker machines after bootstrap.sh has been run on master.
 # No internet connection required.
@@ -31,6 +31,7 @@ PORT=3000
 HOST="0.0.0.0"
 LOG_ENABLED="--log"
 ATTRS_ENABLED="--attrs"
+RUN_IN_BG=false
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -50,9 +51,13 @@ while [[ $# -gt 0 ]]; do
             ATTRS_ENABLED=""
             shift
             ;;
+        --bg)
+            RUN_IN_BG=true
+            shift
+            ;;
         *)
             echo "Unknown option: $1"
-            echo "Usage: source start_server.sh [--port PORT] [--host HOST] [--no-log] [--no-attrs]"
+            echo "Usage: source start_server.sh [--port PORT] [--host HOST] [--bg] [--no-log] [--no-attrs]"
             return 1 2>/dev/null || exit 1
             ;;
     esac
@@ -100,7 +105,31 @@ echo "Test URLs (after preload completes):"
 echo "  http://localhost:$PORT/fixed_0  - Task 0"
 echo "  http://localhost:$PORT/fixed_1  - Task 1"
 echo ""
-echo "Press Ctrl+C to stop the server"
-echo ""
 
-python -m web_agent_site.app $LOG_ENABLED $ATTRS_ENABLED
+LOG_FILE="$SCRIPT_DIR/webshop_server.log"
+
+if [ "$RUN_IN_BG" = true ]; then
+    echo "Starting in background mode..."
+    echo "Log file: $LOG_FILE"
+    echo "To stop: kill \$(cat $SCRIPT_DIR/webshop.pid)"
+    echo ""
+    nohup python -m web_agent_site.app $LOG_ENABLED $ATTRS_ENABLED > "$LOG_FILE" 2>&1 &
+    echo $! > "$SCRIPT_DIR/webshop.pid"
+    echo "Server started with PID: $(cat $SCRIPT_DIR/webshop.pid)"
+    echo "Waiting for server to be ready..."
+
+    # Wait for server to start (check if port is listening)
+    for i in {1..120}; do
+        if curl -s "http://localhost:$PORT" > /dev/null 2>&1; then
+            echo "Server is ready!"
+            break
+        fi
+        sleep 2
+        echo -n "."
+    done
+    echo ""
+else
+    echo "Press Ctrl+C to stop the server"
+    echo ""
+    python -m web_agent_site.app $LOG_ENABLED $ATTRS_ENABLED
+fi

@@ -112,14 +112,20 @@ fi
 cd "$SCRIPT_DIR"
 
 # ============================================================
-# Download spaCy model (use uv since venv has no pip)
+# Download spaCy models (use uv since venv has no pip)
 # ============================================================
 echo ""
-echo "=== Downloading spaCy Model ==="
+echo "=== Downloading spaCy Models ==="
 if ! python -c "import spacy; spacy.load('en_core_web_lg')" 2>/dev/null; then
     uv pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.7.1/en_core_web_lg-3.7.1-py3-none-any.whl
 else
     echo "  en_core_web_lg already installed, skipping"
+fi
+
+if ! python -c "import spacy; spacy.load('en_core_web_sm')" 2>/dev/null; then
+    uv pip install https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
+else
+    echo "  en_core_web_sm already installed, skipping"
 fi
 
 # ============================================================

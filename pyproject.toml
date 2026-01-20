@@ -28,13 +28,17 @@ dependencies = [
     "tqdm>=4.64.0",
     "transformers>=4.19.2",
     "faiss-cpu>=1.7.0",
+    "lxml>=4.9.0",
 ]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.uv]
-dev-dependencies = [
+[tool.hatch.build.targets.wheel]
+packages = ["web_agent_site"]
+
+[dependency-groups]
+dev = [
     "requests-mock",
 ]
